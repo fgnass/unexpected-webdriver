@@ -1,0 +1,28 @@
+{
+  "name": "unexpected-webdriver",
+  "version": "0.0.1",
+  "description": "selenium-webdriver plugin for the unexpected assertion libary",
+  "main": "index.js",
+  "keywords": [
+    "unexpected",
+    "e2e",
+    "selenium",
+    "webdriver",
+    "assertion",
+    "library",
+    "plugin"
+  ],
+  "author": "Felix Gnass <f.gnass@liquidlabs.de>",
+  "license": "MIT",
+  "dependencies": {
+    "magicpen-prism": "^2.2.1"
+  },
+  "peerDependencies": {
+    "unexpected": "^10.0.0",
+    "selenium-webdriver": "^2.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^1.10.3",
+    "eslint-config-airbnb": "^5.0.0"
+  }
+}

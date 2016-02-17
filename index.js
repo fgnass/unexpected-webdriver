@@ -69,7 +69,7 @@ module.exports = {
           if (isElement(err.cause)) {
             return err.cause.getOuterHtml().then(function (html) {
               expect.fail(function (output) {
-                output.code(html, 'html');
+                output.text('but found').sp().code(html, 'html');
               });
             });
           }

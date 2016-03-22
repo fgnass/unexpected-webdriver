@@ -1,5 +1,5 @@
 function isWebElement(obj) {
-  return obj && typeof obj == 'object'
+  return obj && typeof obj === 'object'
     && 'getId' in obj
     && 'getOuterHtml' in obj;
 }

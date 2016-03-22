@@ -28,3 +28,7 @@ const driver = new webdriver.Builder().forBrowser('firefox').build();
 const el = driver.findElement({ id: 'hello' });
 expect(el, 'to contain text', 'Hello World');
 ```
+
+## Credits
+
+Thanks to [Bowery Boogie](http://www.boweryboogie.com/) for their permission to use the photo of [Rickshaw Spidey](http://www.boweryboogie.com/2012/08/rickshaw-spidey-spotted-on-ludlow-street/) performing his unexpected moves.

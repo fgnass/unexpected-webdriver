@@ -39,6 +39,12 @@ describe('unexpected-webdriver', () => {
       const assertion = expect(el, 'to be visible');
       return expect(assertion, 'to be rejected with message', 'expected WebElement to be visible');
     });
+
+    it('should report non-existing elements', () => {
+      const el = driver.findElement({ id: 'not-there' });
+      const assertion = expect(el, 'to be visible');
+      return expect(assertion, 'to be rejected with message', 'expected WebElement to exist');
+    });
   });
 
   describe('to contain text', () => {

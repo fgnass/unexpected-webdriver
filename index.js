@@ -26,7 +26,13 @@ module.exports = {
 
     expect.addAssertion(
       '<WebElement> to be visible',
-      (expect, el) => expect(el.isDisplayed(), 'to be fulfilled with', true)
+      (expect, el) => {
+        expect.errorMode = 'bubble';
+        return expect(el, 'to exist').then(() => {
+          expect.errorMode = 'default';
+          return expect(el.isDisplayed(), 'to be fulfilled with', true);
+        });
+      }
     );
 
     expect.addAssertion(

@@ -21,8 +21,8 @@
     "unexpected": "^10.0.0"
   },
   "devDependencies": {
-    "eslint": "^1.10.3",
-    "eslint-config-airbnb": "^5.0.0",
+    "eslint": "^2.4.0",
+    "eslint-config-airbnb": "^6.1.0",
     "mocha": "^2.4.5",
     "selenium-webdriver": "^2.53.1",
     "unexpected": "^10.10.8"

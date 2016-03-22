@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/LiquidLabsGmbH/unexpected-webdriver.svg?branch=master)](https://travis-ci.org/LiquidLabsGmbH/unexpected-webdriver)
+
 # unexpected-webdriver
 
 A plugin for [unexpected](http://unexpected.js.org) that adds assertions for the

@@ -1,96 +1,60 @@
-function isElement(el) {
-  return el && typeof el == 'object'
-    && 'getInnerHtml' in el
-    && 'getOuterHtml' in el
-    && 'getRawId' in el;
+function isWebElement(obj) {
+  return obj && typeof obj == 'object'
+    && 'getId' in obj
+    && 'getOuterHtml' in obj;
 }
 
 module.exports = {
 
   name: 'unexpected-webdriver',
 
-  installInto: function (expect) {
-
-    // add prism to syntax highlight html
-    expect.installPlugin(require('magicpen-prism'));
+  installInto(expect) {
 
     expect.addType({
-      name: 'WebDriver',
+      name: 'WebElement',
       base: 'object',
-      identify: function (value) {
-        return value && typeof value == 'object'
-          && 'findElement' in value
-          && 'executor_' in value
-          && 'flow_' in value;
-      },
-      inspect: function (se, depth, output) {
-        output.text('WebDriver', 'jsFunctionName');
+      identify: isWebElement,
+      inspect(se, depth, output) {
+        output.text('WebElement', 'jsFunctionName');
       }
     });
 
     expect.addAssertion(
-      '<WebDriver> to find <string>',
-      function (expect, driver, sel) {
-        return expect.promise(function (res) {
-          driver.findElement({ css: sel }).then(res).thenCatch(res);
-        })
-        .then(function (err) {
-          if (err) expect.fail();
-        });
+      '<WebElement> to exist',
+      (expect, el) => expect(Promise.resolve(el), 'to be fulfilled')
+    );
+
+    expect.addAssertion(
+      '<WebElement> to be visible',
+      (expect, el) => expect(el.isDisplayed(), 'to be fulfilled with', true)
+    );
+
+    expect.addAssertion(
+      '<WebElement> to contain text <string+>',
+      function (expect, el) {
+        const texts = Array.prototype.slice.call(arguments, 2);
+        const args = [el.getText(), 'when fulfilled', 'to contain'].concat(texts);
+        return expect.apply(expect, args);
       }
     );
 
     expect.addAssertion(
-      '<WebDriver> not to find <string>',
-      function (expect, driver, sel) {
-        expect.errorMode = 'nested';
+      '<WebElement> to contain text <regexp>',
+      (expect, el, pattern) => expect(el.getText(), 'when fulfilled', 'to match', pattern)
+    );
 
-        return expect.promise(function () {
-          return driver.findElement({ css: sel }).then(function (el) {
-            return el.getOuterHtml();
-          })
-          .thenCatch(function (err) {
-            if (err.name != 'NoSuchElementError') throw err;
-          });
-        })
-        .then(function (html) {
-          expect.fail(function (output) {
-            output.text('but found').sp().code(html, 'html');
-          });
-        });
+    expect.addAssertion(
+      '<WebElement> to contain html <string+>',
+      function (expect, el) {
+        const texts = Array.prototype.slice.call(arguments, 2);
+        const args = [el.getInnerHtml(), 'when fulfilled', 'to contain'].concat(texts);
+        return expect.apply(expect, args);
       }
     );
 
     expect.addAssertion(
-      '<WebDriver> to wait for <any>',
-      function (expect, driver, until) {
-        expect.errorMode = 'nested';
-        return driver.wait(until).thenCatch(function (err) {
-          if (isElement(err.cause)) {
-            return err.cause.getOuterHtml().then(function (html) {
-              expect.fail(function (output) {
-                output.text('but found').sp().code(html, 'html');
-              });
-            });
-          }
-          return expect.promise(function () {
-            expect.fail(err);
-          });
-        });
-      }
-    );
-
-    expect.addAssertion(
-      '<function> [when] executed by <WebDriver> <assertion>',
-      function (expect, fn, driver) {
-        expect.errorMode = 'nested';
-        return expect.promise(function () {
-          return driver.executeScript(fn);
-        })
-        .then(function (res) {
-          return expect.shift(res);
-        });
-      }
+      '<WebElement> to contain html <regexp>',
+      (expect, el, pattern) => expect(el.getInnerHtml(), 'when fulfilled', 'to match', pattern)
     );
 
   }

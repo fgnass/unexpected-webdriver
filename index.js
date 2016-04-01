@@ -1,67 +1,101 @@
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
 function isWebElement(obj) {
   return obj && typeof obj === 'object'
     && 'getId' in obj
     && 'getOuterHtml' in obj;
 }
 
-module.exports = {
+module.exports = (options) => {
 
-  name: 'unexpected-webdriver',
+  let filecounter = 1;
+  const outPath = options && options.screenshots;
 
-  installInto(expect) {
+  function takeScreenshot(driver) {
+    if (!outPath) return Promise.resolve();
 
-    expect.addType({
-      name: 'WebElement',
-      base: 'object',
-      identify: isWebElement,
-      inspect(se, depth, output) {
-        output.text('WebElement', 'jsFunctionName');
-      }
-    });
-
-    expect.addAssertion(
-      '<WebElement> to exist',
-      (expect, el) => expect(Promise.resolve(el), 'to be fulfilled')
-    );
-
-    expect.addAssertion(
-      '<WebElement> to be visible',
-      (expect, el) => {
-        expect.errorMode = 'bubble';
-        return expect(el, 'to exist').then(() => {
-          expect.errorMode = 'default';
-          return expect(el.isDisplayed(), 'to be fulfilled with', true);
-        });
-      }
-    );
-
-    expect.addAssertion(
-      '<WebElement> to contain text <string+>',
-      function (expect, el) {
-        const texts = Array.prototype.slice.call(arguments, 2);
-        const args = [el.getText(), 'when fulfilled', 'to contain'].concat(texts);
-        return expect.apply(expect, args);
-      }
-    );
-
-    expect.addAssertion(
-      '<WebElement> to contain text <regexp>',
-      (expect, el, pattern) => expect(el.getText(), 'when fulfilled', 'to match', pattern)
-    );
-
-    expect.addAssertion(
-      '<WebElement> to contain html <string+>',
-      function (expect, el) {
-        const texts = Array.prototype.slice.call(arguments, 2);
-        const args = [el.getInnerHtml(), 'when fulfilled', 'to contain'].concat(texts);
-        return expect.apply(expect, args);
-      }
-    );
-
-    expect.addAssertion(
-      '<WebElement> to contain html <regexp>',
-      (expect, el, pattern) => expect(el.getInnerHtml(), 'when fulfilled', 'to match', pattern)
-    );
-
+    return driver.takeScreenshot().then(image => new Promise(resolve => {
+      const filename = path.join(outPath, `screenshot-${filecounter++}.png`);
+      fs.writeFile(filename, image, { encoding: 'base64', flag: 'w' }, writeErr => {
+        if (writeErr) {
+          // eslint-disable-next-line
+          console.log('Error writing screenshot: ', writeErr);
+        }
+        resolve(filename);
+      });
+    }));
   }
+
+  function failWithScreenshot(el) {
+    return (err) => takeScreenshot(el.getDriver()).then((filename) => {
+      err.screenshot = filename;
+      return Promise.reject(err);
+    });
+  }
+
+  return {
+    name: 'unexpected-webdriver',
+
+    installInto(expect) {
+
+      expect.addType({
+        name: 'WebElement',
+        base: 'object',
+        identify: isWebElement,
+        inspect(se, depth, output) {
+          output.text('WebElement', 'jsFunctionName');
+        }
+      });
+
+      expect.addAssertion(
+        '<WebElement> to exist',
+        (expect, el) => expect(Promise.resolve(el), 'to be fulfilled')
+          .catch(failWithScreenshot(el)));
+
+      expect.addAssertion(
+        '<WebElement> to be visible',
+        (expect, el) => {
+          expect.errorMode = 'bubble';
+          return expect(el, 'to exist').then(() => {
+            expect.errorMode = 'default';
+            return expect(el.isDisplayed(), 'to be fulfilled with', true)
+              .catch(failWithScreenshot(el));
+          });
+        }
+      );
+
+      expect.addAssertion(
+        '<WebElement> to contain text <string+>',
+        function (expect, el) {
+          const texts = Array.prototype.slice.call(arguments, 2);
+          const args = [el.getText(), 'when fulfilled', 'to contain'].concat(texts);
+          return expect.apply(expect, args).catch(failWithScreenshot(el));
+        }
+      );
+
+      expect.addAssertion(
+        '<WebElement> to contain text <regexp>',
+        (expect, el, pattern) => expect(el.getText(), 'when fulfilled', 'to match', pattern)
+          .catch(failWithScreenshot(el))
+      );
+
+      expect.addAssertion(
+        '<WebElement> to contain html <string+>',
+        function (expect, el) {
+          const texts = Array.prototype.slice.call(arguments, 2);
+          const args = [el.getInnerHtml(), 'when fulfilled', 'to contain'].concat(texts);
+          return expect.apply(expect, args).catch(failWithScreenshot(el));
+        }
+      );
+
+      expect.addAssertion(
+        '<WebElement> to contain html <regexp>',
+        (expect, el, pattern) => expect(el.getInnerHtml(), 'when fulfilled', 'to match', pattern)
+          .catch(failWithScreenshot(el))
+      );
+    }
+  };
 };

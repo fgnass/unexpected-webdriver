@@ -111,6 +111,20 @@ describe('unexpected-webdriver', () => {
       });
 
     });
+
+    describe('to locate', () => {
+
+      it('should locate a promise to be a WebElement', () => {
+        const el = driver.findElement({ id: 'hello' });
+        return expect(driver, 'to locate', el);
+      });
+
+      it('should fail if the promise does not resolve to a WebElement', () => {
+        const el = driver.findElement({ id: 'hello' }).click();
+        const assertion = expect(driver, 'to locate', el);
+        return expect(assertion, 'to be rejected with message', /expected 'ok' to be a WebElement/);
+      });
+    });
   });
 
   context('with screenshots', () => {

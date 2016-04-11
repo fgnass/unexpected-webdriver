@@ -9,6 +9,14 @@ function isWebElement(obj) {
     && 'getOuterHtml' in obj;
 }
 
+function isWebDriver(obj) {
+  return obj && typeof obj === 'object'
+    && 'controlFlow' in obj
+    && 'executeScript' in obj
+    && 'findElement' in obj;
+}
+
+
 module.exports = (options) => {
 
   let filecounter = 1;
@@ -29,8 +37,9 @@ module.exports = (options) => {
     }));
   }
 
-  function failWithScreenshot(el) {
-    return (err) => takeScreenshot(el.getDriver()).then((filename) => {
+  function failWithScreenshot(obj) {
+    const driver = isWebElement(obj) ? obj.getDriver() : obj;
+    return (err) => takeScreenshot(driver).then((filename) => {
       err.screenshot = filename;
       return Promise.reject(err);
     });
@@ -50,10 +59,27 @@ module.exports = (options) => {
         }
       });
 
+      expect.addType({
+        name: 'WebDriver',
+        base: 'object',
+        identify: isWebDriver,
+        inspect(se, depth, output) {
+          output.text('WebDriver', 'jsFunctionName');
+        }
+      });
+
       expect.addAssertion(
         '<WebElement> to exist',
         (expect, el) => expect(Promise.resolve(el), 'to be fulfilled')
           .catch(failWithScreenshot(el)));
+
+      expect.addAssertion(
+        '<WebDriver> to locate <Promise>',
+        (expect, driver, promise) => {
+          expect.errorMode = 'bubble';
+          return expect(promise, 'when fulfilled', 'to be a', 'WebElement')
+            .catch(failWithScreenshot(driver));
+        });
 
       expect.addAssertion(
         '<WebElement> to be visible',

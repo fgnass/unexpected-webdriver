@@ -15,13 +15,18 @@ from the Selenium project.
 * `<WebElement> to contain text <string+|regexp>`
 * `<WebElement> to contain html <string+|regexp>`
 
+## Options
+* `screenshots`: Directory path, used to take a screenshot whenever a assertion fails.
+
 ## Example
 
 ```js
 const webdriver = require('selenium-webdriver');
 const expect = require('unexpected');
 
-expect.use(require('unexpected-webdriver'));
+expect.use(require('unexpected-webdriver')({
+  screenshots: __dirname
+}));
 
 const driver = new webdriver.Builder().forBrowser('firefox').build();
 

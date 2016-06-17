@@ -14,6 +14,8 @@ from the Selenium project.
 * `<WebElement> to be visible`
 * `<WebElement> to contain text <string+|regexp>`
 * `<WebElement> to contain html <string+|regexp>`
+* `<WebElement> [not] to have attribute <string>`
+* `<WebElement> to have attribute <string> <string>`
 
 ## Options
 * `screenshots`: Directory path, used to take a screenshot whenever a assertion fails.

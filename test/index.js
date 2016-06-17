@@ -125,6 +125,23 @@ describe('unexpected-webdriver', () => {
         return expect(assertion, 'to be rejected with message', /expected 'ok' to be a WebElement/);
       });
     });
+
+    describe('to have attribute', () => {
+      it('should check for the presence of an attribute', () => {
+        const el = driver.findElement({ id: 'hidden' });
+        return expect(el, 'to have attribute', 'style');
+      });
+
+      it('should check for the absence of an attribute', () => {
+        const el = driver.findElement({ id: 'hidden' });
+        return expect(el, 'not to have attribute', 'class');
+      });
+
+      it('should check the value of an attribute', () => {
+        const el = driver.findElement({ id: 'hidden' });
+        return expect(el, 'to have attribute', 'style', 'visibility: hidden;');
+      });
+    });
   });
 
   context('with screenshots', () => {

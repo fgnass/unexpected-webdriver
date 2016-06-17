@@ -122,6 +122,18 @@ module.exports = (options) => {
         (expect, el, pattern) => expect(el.getInnerHtml(), 'when fulfilled', 'to match', pattern)
           .catch(failWithScreenshot(el))
       );
+
+      expect.addAssertion(
+        '<WebElement> [not] to have attribute <string>',
+        (expect, el, name) =>
+          expect(el.getAttribute(name), 'when fulfilled', '[not] to be a string')
+      );
+
+      expect.addAssertion(
+        '<WebElement> to have attribute <string> <string>',
+        (expect, el, name, value) =>
+          expect(el.getAttribute(name), 'when fulfilled', 'to be', value)
+      );
     }
   };
 };

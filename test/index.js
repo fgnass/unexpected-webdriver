@@ -16,6 +16,10 @@ describe('unexpected-webdriver', () => {
 
   beforeEach(() => driver.get(`file://${__dirname}/fixture.html`));
 
+  after(() => {
+    driver.quit();
+  });
+
   context('assertions', () => {
 
     const expect = unexpected.clone().use(sut());
@@ -122,7 +126,7 @@ describe('unexpected-webdriver', () => {
       it('should fail if the promise does not resolve to a WebElement', () => {
         const el = driver.findElement({ id: 'hello' }).click();
         const assertion = expect(driver, 'to locate', el);
-        return expect(assertion, 'to be rejected with message', /expected 'ok' to be a WebElement/);
+        return expect(assertion, 'to be rejected with message', /expected {} to be a WebElement/);
       });
     });
 

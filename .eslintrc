@@ -1,7 +1,12 @@
 {
   "extends": [
-    "airbnb/base"
+    "eslint:recommended"
   ],
+  "env": {
+    "node": true,
+    "es6": true,
+    "mocha": true
+  },
   "rules": {
     "comma-dangle": [2, "never"],
     "func-names": 0,

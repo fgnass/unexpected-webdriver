@@ -6,7 +6,7 @@ const path = require('path');
 function isWebElement(obj) {
   return obj && typeof obj === 'object'
     && 'getId' in obj
-    && 'getOuterHtml' in obj;
+    && 'getAttribute' in obj;
 }
 
 function isWebDriver(obj) {
@@ -112,14 +112,18 @@ module.exports = (options) => {
         '<WebElement> to contain html <string+>',
         function (expect, el) {
           const texts = Array.prototype.slice.call(arguments, 2);
-          const args = [el.getInnerHtml(), 'when fulfilled', 'to contain'].concat(texts);
+          const args = [el.getAttribute('innerHTML'), 'when fulfilled', 'to contain'].concat(texts);
           return expect.apply(expect, args).catch(failWithScreenshot(el));
         }
       );
 
       expect.addAssertion(
         '<WebElement> to contain html <regexp>',
-        (expect, el, pattern) => expect(el.getInnerHtml(), 'when fulfilled', 'to match', pattern)
+        (expect, el, pattern) => expect(
+            el.getAttribute('innerHTML'),
+            'when fulfilled',
+            'to match', pattern
+          )
           .catch(failWithScreenshot(el))
       );
 

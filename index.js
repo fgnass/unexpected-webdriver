@@ -137,7 +137,7 @@ module.exports = (options) => {
       expect.addAssertion(
         '<WebElement> to have attribute <string> <string>',
         (expect, el, name, value) =>
-          expect(el.getAttribute(name), 'when fulfilled', 'to be', value)
+          expect(el.getAttribute(name).then(s => s.trim()), 'when fulfilled', 'to be', value)
       );
     }
   };

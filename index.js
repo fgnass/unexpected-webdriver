@@ -6,7 +6,8 @@ const path = require('path');
 function isWebElement(obj) {
   return obj && typeof obj === 'object'
     && 'getId' in obj
-    && 'getAttribute' in obj;
+    && 'getAttribute' in obj
+    && 'click' in obj;
 }
 
 function isWebDriver(obj) {

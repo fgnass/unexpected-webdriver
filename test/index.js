@@ -3,7 +3,8 @@
 const fs = require('fs');
 const webdriver = require('selenium-webdriver');
 const sut = require('..');
-const unexpected = require('unexpected');
+const unexpected = require('unexpected')
+  .clone();
 
 const driver = new webdriver.Builder().forBrowser('firefox').build();
 

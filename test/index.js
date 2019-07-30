@@ -139,7 +139,7 @@ describe('unexpected-webdriver', () => {
 
       it('should check for the absence of an attribute', () => {
         const el = driver.findElement({ id: 'hidden' });
-        return expect(el, 'not to have attribute', 'class');
+        return expect(el, 'not to have attribute', 'blabla');
       });
 
       it('should check the value of an attribute', () => {

@@ -130,8 +130,10 @@ module.exports = (options) => {
 
       expect.addAssertion(
         '<WebElement> [not] to have attribute <string>',
-        (expect, el, name) =>
-          expect(el.getAttribute(name), 'when fulfilled', '[not] to be a string')
+        (expect, el, name) => {
+          expect.errorMode = 'nested';
+          return expect(el.getAttribute(name), 'when fulfilled', '[not] to be a string');
+        }
       );
 
       expect.addAssertion(
